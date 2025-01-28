@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "pyspark-redshift-etl-pipeline"
+version = "0.1.0"
+description = ""
+authors = ["Ayush Jain <ayushjn62@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+kaggle = "^1.6.17"
+pyspark = "^3.5.4"
+sqlalchemy = "^2.0.37"
+snowflake-sqlalchemy = "^1.7.3"
+python-dotenv = "^1.0.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

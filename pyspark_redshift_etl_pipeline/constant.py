@@ -1,0 +1,7 @@
+DATA_DIR = "movies_data"
+DATASET_NAME = "ashirwadsangwan/imdb-dataset"
+NAME_BASICS_FILE_PATH = "/app/movies-data/name.basics.tsv"
+TITLE_AKAS_FILE_PATH = "/app/movies-data/title.akas.tsv"
+TITLE_BASICS_FILE_PATH = "/app/movies-data/title.basics.tsv"
+TITLE_PRINCIPALS_FILE_PATH = "/app/movies-data/title.principals.tsv"
+TITLE_RATINGS_FILE_PATH = "/app/movies-data/title.ratings.tsv"

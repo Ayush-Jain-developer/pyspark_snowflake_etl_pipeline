@@ -1,0 +1,41 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: pyspark-job
+  namespace: pyspark-depl
+spec:
+  ttlSecondsAfterFinished: 100
+  template:
+    spec:
+      serviceAccountName: pyspark-depl-service-account
+      containers:
+      - name: pyspark-job
+        image: 730335620397.dkr.ecr.ap-south-1.amazonaws.com/pysaprk_etl/pyspark_redshift_pipeline:latest
+        env: 
+          - name: AWS_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef: 
+                name: aws-credentials
+                key: AWS_ACCESS_KEY_ID
+          - name: AWS_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef: 
+                name: aws-credentials
+                key: AWS_SECRET_ACCESS_KEY
+        command: [
+                "spark-submit",
+                "--master", "k8s://https://kubernetes.default.svc", 
+                "--deploy-mode", "cluster",  
+                "--conf", "spark.driver.memory=5g", 
+                "--conf", "spark.driver.cores=8", 
+                "--conf", "spark.kubernetes.namespace=pyspark-depl", 
+                "--conf", "spark.kubernetes.driver.volumes.hostPath.movies-data-volume.mount.path=/app/movies-data",
+                "--conf", "spark.kubernetes.driver.volumes.hostPath.movies-data-volume.options.path=/mnt/d/python/Python_Project/pyspark_redshift_etl_pipeline/movies_data/",
+                "--conf", "spark.kubernetes.driver.volumes.hostPath.movies-data-volume.mount.readOnly=true",
+                "--conf", "spark.kubernetes.container.image=730335620397.dkr.ecr.ap-south-1.amazonaws.com/pysaprk_etl/pyspark_redshift_pipeline:latest",
+                "local:///app/main.py",
+              ]
+      restartPolicy: OnFailure
+      imagePullSecrets:
+        - name: aws-creds
+      
