@@ -10,7 +10,6 @@ kaggle = "^1.6.17"
 pyspark = "^3.5.4"
 sqlalchemy = "^2.0.37"
 snowflake-sqlalchemy = "^1.7.3"
-python-dotenv = "^1.0.1"
 
 
 [build-system]

@@ -11,12 +11,17 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Spark and Hadoop
-ENV SPARK_VERSION=3.5.4
+ENV SPARK_VERSION=3.4.4
 ENV HADOOP_VERSION=3
 RUN wget https://downloads.apache.org/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz \
     && tar -xzf spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz -C /usr/local \
     && mv /usr/local/spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION} /usr/local/spark \
     && rm spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz
+
+ENV SCALA_VERSION=2.12
+RUN wget -P /usr/local/spark/jars \
+        https://repo1.maven.org/maven2/net/snowflake/spark-snowflake_${SCALA_VERSION}/${SCALA_VERSION}.0-spark_3.4/spark-snowflake_${SCALA_VERSION}-${SCALA_VERSION}.0-spark_3.4.jar \
+        https://repo1.maven.org/maven2/net/snowflake/snowflake-jdbc/3.13.29/snowflake-jdbc-3.13.29.jar
 
 # Set Spark and Hadoop environment variables
 ENV SPARK_HOME=/usr/local/spark

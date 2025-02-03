@@ -1,35 +1,36 @@
 import os
 from pyspark.sql import SparkSession
+from constant import TITLE_BASICS_FILE_PATH
 
-spark = SparkSession.builder.appName("spark_etl_pipeline").getOrCreate()
+spark = SparkSession.builder.appName("spark_etl_pipeline").getOrCreate() 
 
+csv_file_paths = {
+    TITLE_BASICS_FILE_PATH: "title_ratings"
+}
 
-def transform_data(file_path, title_file_path):
-    df = None
-    titles_df = None
-    
-    if os.path.exists(file_path):
+def transform_data(df):
+    return df
+
+def write_to_snowflake(df, table_name):
+    df.write.format("net.snowflake.spark.snowflake") \
+    .option("sfURL", os.getenv("SNOWFLAKE_ACCOUNT")) \
+    .option("sfDatabase", os.getenv("SNOWFLAKE_DATABASE")) \
+    .option("sfSchema", os.getenv("SNOWFLAKE_SCHEMA")) \
+    .option("sfUser", os.getenv("SNOWFLAKE_USERNAME")) \
+    .option("sfPassword", os.getenv("SNOWFLAKE_PASSWORD")) \
+    .option("sfWarehouse", os.getenv("SNOWFLAKE_WAREHOUSE")) \
+    .option("dbTable", table_name) \
+    .mode("overwrite").save()
+
+def process_csv_file(file_path, table_name):
+
+    try:
         df = spark.read.csv(file_path, sep='\t', header=True, inferSchema=True)
+        df = transform_data(df)
+        write_to_snowflake(df, table_name)
+    except Exception as e:
+        print(f"Error occurred: {e}")
 
-    if os.path.exists(title_file_path):
-        titles_df = spark.read.csv(title_file_path, sep='\t', header=True, inferSchema=True)
-
-    else:
-        print(f"{title_file_path} does not exist")
-    
-    chunked_df = df.repartition(3)
-    chunked_df_titles = titles_df.repartition(3)
-
-    def process_partition(iterator):
-        count = 0
-        for _ in iterator:
-            count += 1
-
-    def process_titles(iterator):
-        count = 0
-        for _ in iterator:
-            count += 1
-
-    chunked_df.foreachPartition(process_partition)
-    chunked_df_titles.foreachPartition(process_titles)
+for file, table_name in csv_file_paths:
+    process_csv_file(file, table_name)
 
